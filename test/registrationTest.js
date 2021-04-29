@@ -9,6 +9,7 @@ const app = require('../index.js'); // Our app
 var body = {
     first:"test",
     last:"test1",
+    username: "fakeuser",
     email:"test@fake.email.com",
     password:"test"
 };
