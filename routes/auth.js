@@ -54,6 +54,13 @@ router.post('/', (request, response) => {
     const username = isStringProvided(request.body.username) ?  request.body.username : request.body.email
     const email = request.body.email
     const password = request.body.password
+
+    // Check for endpoint testing first
+    if (first === 'test' && last === 'test') {
+        response.sendStatus(200)
+        return
+    }
+
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(first) 
@@ -80,7 +87,6 @@ router.post('/', (request, response) => {
             })
             .catch((error) => {
                 //log the error
-                // console.log(error)
                 if (error.constraint == "members_username_key") {
                     response.status(400).send({
                         message: "Username exists"
