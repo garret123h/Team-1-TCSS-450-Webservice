@@ -1,5 +1,7 @@
+
 //express is the framework we're going to use to handle requests
 const express = require('express')
+
 //Create a new instance of express
 const app = express()
 
@@ -24,22 +26,12 @@ app.use(middleware.jsonErrorInBody)
  */
 app.use('/auth', require('./routes/auth.js'))
 
-
-/*
- * Return HTML for the / end point. 
- * This is a nice location to document your web service API
- * Create a web page in HTML/CSS and have this end point return it. 
- * Look up the node module 'fs' ex: require('fs');
- */
+// Add home page endpoint.
 app.get("/", (request, response) => {
-
-    //this is a Web page so set the content-type to HTML
-    response.writeHead(200, {'Content-Type': 'text/html'});
-    for (i = 1; i < 7; i++) {
-        //write a response to the client
-        response.write('<h' + i + ' style="color:blue">Hello World!</h' + i + '>'); 
-    }
-    response.end(); //end the response
+    // Home page can contain a link to the documentation
+    response.status(200).send(
+        '<a href="https://group1-tcss450-project.herokuapp.com/doc">API Documentation</a>'
+    )
 });
 
 /*
@@ -61,3 +53,5 @@ app.use("/doc", express.static('apidoc'))
 app.listen(process.env.PORT || 5000, () => {
     console.log("Server up and running on port: " + (process.env.PORT || 5000));
 });
+
+module.exports = app;
