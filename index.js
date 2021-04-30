@@ -20,7 +20,7 @@ app.use(express.json())
 app.use(middleware.jsonErrorInBody)
 
 /*
- * Setup auth endpoint for user registration.
+ * Setup auth endpoint for user registration and login.
  */
 app.use('/auth', require('./routes/auth.js'))
 
