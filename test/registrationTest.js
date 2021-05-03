@@ -13,11 +13,6 @@ var registrationBody = {
     "password": "test"
 };
 
-var signinBody = {
-    "username": "test",
-    "password": "password"
-}
-
 describe('Home page endpoint', function () {
     it('should load the home page', function () {
         return chai.request(app)
