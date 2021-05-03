@@ -77,7 +77,6 @@ router.post('/', (request, response) => {
 
         let salt = generateSalt(32)
         let salted_hash = generateHash(password, salt)
-        
         //We're using placeholders ($1, $2, $3) in the SQL query string to avoid SQL Injection
         //If you want to read more: https://stackoverflow.com/a/8265319
         let theQuery = "INSERT INTO MEMBERS(FirstName, LastName, Username, Email, Password, Salt) VALUES ($1, $2, $3, $4, $5, $6) RETURNING Email"
@@ -89,7 +88,13 @@ router.post('/', (request, response) => {
                     success: true,
                     email: result.rows[0].email
                 })
-                sendEmail("our.email@lab.com", email, "Welcome to our App!", "Please verify your Email account.")
+
+                sendEmail(
+                    process.env.EMAIL, email, 
+                    'Email verification',
+                    '<h3>Email verification code: ' + process.env.EMAIL_VERIFICATION + '</h3>',
+                    process.env.EMAIL_PASSWORD
+                )
             })
             .catch((error) => {
                 //log the error
