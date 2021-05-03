@@ -37,7 +37,9 @@ app.get("/", (request, response) => {
 // Add endpoint for front end application to retrieve email verification code.
 app.get('/get-verification', (request, response) => {
     response.status(200).send(
-        process.env.EMAIL_VERIFICATION
+        {
+            verification: process.env.EMAIL_VERIFICATION
+        }
     )
 })
 
