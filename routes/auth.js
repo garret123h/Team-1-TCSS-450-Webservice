@@ -51,13 +51,13 @@ const config = {
  * @apiError (400: Other Error) {String} message "other error, see detail"
  * @apiError (400: Other Error) {String} detail Information about th error
  * 
- */ 
+ */
 router.post('/', (request, response) => {
 
     //Retrieve data from query params
     const first = request.body.first
     const last = request.body.last
-    const username = isStringProvided(request.body.username) ?  request.body.username : request.body.email
+    const username = isStringProvided(request.body.username) ? request.body.username : request.body.email
     const email = request.body.email
     const password = request.body.password
 
@@ -69,15 +69,14 @@ router.post('/', (request, response) => {
 
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
-    if(isStringProvided(first) 
-        && isStringProvided(last) 
-        && isStringProvided(username) 
-        && isStringProvided(email) 
+    if (isStringProvided(first)
+        && isStringProvided(last)
+        && isStringProvided(username)
+        && isStringProvided(email)
         && isStringProvided(password)) {
 
         let salt = generateSalt(32)
         let salted_hash = generateHash(password, salt)
-        
         //We're using placeholders ($1, $2, $3) in the SQL query string to avoid SQL Injection
         //If you want to read more: https://stackoverflow.com/a/8265319
         let theQuery = "INSERT INTO MEMBERS(FirstName, LastName, Username, Email, Password, Salt) VALUES ($1, $2, $3, $4, $5, $6) RETURNING Email"
@@ -89,7 +88,13 @@ router.post('/', (request, response) => {
                     success: true,
                     email: result.rows[0].email
                 })
-                sendEmail("our.email@lab.com", email, "Welcome to our App!", "Please verify your Email account.")
+
+                sendEmail(
+                    process.env.EMAIL, email,
+                    'Email verification',
+                    '<h3>Email verification code: ' + process.env.EMAIL_VERIFICATION + '</h3>',
+                    process.env.EMAIL_PASSWORD
+                )
             })
             .catch((error) => {
                 //log the error
@@ -143,8 +148,8 @@ router.post('/', (request, response) => {
  * 
  * @apiError (400: Invalid Credentials) {String} message "Credentials did not match"
  * 
- */ 
- router.get('/', (request, response, next) => {
+ */
+router.get('/', (request, response, next) => {
     if (isStringProvided(request.headers.authorization) && request.headers.authorization.startsWith('Basic ')) {
         next()
     } else {
@@ -152,16 +157,16 @@ router.post('/', (request, response) => {
     }
 }, (request, response, next) => {
     // obtain auth credentials from HTTP Header
-    const base64Credentials =  request.headers.authorization.split(' ')[1]
-    
+    const base64Credentials = request.headers.authorization.split(' ')[1]
+
     const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii')
 
     const [email, password] = credentials.split(':')
 
     if (isStringProvided(email) && isStringProvided(password)) {
-        request.auth = { 
-            "email" : email,
-            "password" : password
+        request.auth = {
+            "email": email,
+            "password": password
         }
         next()
     } else {
@@ -173,25 +178,25 @@ router.post('/', (request, response) => {
     const theQuery = "SELECT Password, Salt, MemberId FROM Members WHERE Email=$1"
     const values = [request.auth.email]
     pool.query(theQuery, values)
-        .then(result => { 
+        .then(result => {
             if (result.rowCount == 0) {
                 response.status(404).send({
-                    message: 'User not found' 
+                    message: 'User not found'
                 })
                 return
             }
 
             //Retrieve the salt used to create the salted-hash provided from the DB
             let salt = result.rows[0].salt
-            
+
             //Retrieve the salted-hash password provided from the DB
-            let storedSaltedHash = result.rows[0].password 
+            let storedSaltedHash = result.rows[0].password
 
             //Generate a hash based on the stored salt and the provided password
             let providedSaltedHash = generateHash(request.auth.password, salt)
 
             //Did our salted hash match their salted hash?
-            if (storedSaltedHash === providedSaltedHash ) {
+            if (storedSaltedHash === providedSaltedHash) {
                 //credentials match. get a new JWT
                 let token = jwt.sign(
                     {
@@ -199,7 +204,7 @@ router.post('/', (request, response) => {
                         "memberid": result.rows[0].memberid
                     },
                     config.secret,
-                    { 
+                    {
                         expiresIn: '14 days' // expires in 14 days
                     }
                 )
@@ -212,7 +217,7 @@ router.post('/', (request, response) => {
             } else {
                 //credentials dod not match
                 response.status(400).send({
-                    message: 'Credentials did not match' 
+                    message: 'Credentials did not match'
                 })
             }
         })
