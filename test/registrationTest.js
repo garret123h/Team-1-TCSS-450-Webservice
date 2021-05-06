@@ -23,19 +23,6 @@ describe('Home page endpoint', function () {
     })
 })
 
-describe('Registration endpoint', function () {
-    // POST register fake account.
-    it('should try and register user', function () {
-        return chai.request(app)
-            .post('/auth')
-            .send(registrationBody)
-            .then(function (res) {
-                expect(res).to.have.status(200)
-            });
-    });
-}
-)
-
 describe('Email verification endpoint', function () {
     // GET request for email verification
     it('should retrieve email verification code', function () {
