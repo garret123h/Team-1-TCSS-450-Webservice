@@ -6,13 +6,6 @@ chai.use(require('chai-http'));
 
 const app = require('../index.js'); // Our app
 
-var registrationBody = {
-    "first": "test",
-    "last": "test",
-    "email": "test@fake.email.com",
-    "password": "test"
-};
-
 describe('Home page endpoint', function () {
     it('should load the home page', function () {
         return chai.request(app)
