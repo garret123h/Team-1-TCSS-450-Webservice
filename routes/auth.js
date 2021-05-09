@@ -67,7 +67,9 @@ router.post('/', (request, response) => {
         && isStringProvided(last)
         && isStringProvided(username)
         && isStringProvided(email)
-        && isStringProvided(password)) {
+        && isStringProvided(password)
+        && isValidEmail(email)
+        && isValidPassword(password)) {
 
         let salt = generateSalt(32)
         let salted_hash = generateHash(password, salt)
