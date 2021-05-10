@@ -61,19 +61,15 @@ router.post('/', (request, response) => {
     const email = request.body.email
     const password = request.body.password
 
-    // Check for endpoint testing first
-    if (first === 'test' && last === 'test') {
-        response.sendStatus(200)
-        return
-    }
-
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if (isStringProvided(first)
         && isStringProvided(last)
         && isStringProvided(username)
         && isStringProvided(email)
-        && isStringProvided(password)) {
+        && isStringProvided(password)
+        && isValidEmail(email)
+        && isValidPassword(password)) {
 
         let salt = generateSalt(32)
         let salted_hash = generateHash(password, salt)
