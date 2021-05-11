@@ -6,6 +6,8 @@ const pool = require('../utilities').pool
 
 const validation = require('../utilities').validation
 let isStringProvided = validation.isStringProvided
+let isValidEmail = validation.isValidEmail
+let isValidPassword = validation.isValidPassword
 
 const generateHash = require('../utilities').generateHash
 const generateSalt = require('../utilities').generateSalt
