@@ -21,7 +21,8 @@ let isValidPassword = (password) => {
 let isValidEmail = (email) => {
   let containsAtSymbol = contains([...email], char => char === '@')
   let containsDotCom = email.indexOf('.com') !== -1
-  return email.length > 0 && containsAtSymbol && containsDotCom
+  let containsEdu = email.indexOf('.edu') !== -1
+  return email.length > 0 && containsAtSymbol && containsDotCom && containsEdu
 }
 
 let validLength = (param) =>
