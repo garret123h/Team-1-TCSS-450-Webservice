@@ -12,7 +12,7 @@ let isValidPassword = (password) => {
   let containsDigit = contains([...password], char => char >='0' && char <= '9')
   let containsUpperCase = contains([...password], char => char >= 'A' && char <= 'Z')
   let containsLowerCase = contains([...password], char => char >= 'a' && char <= 'z')
-  let containsSpecialChar = contains([...password], char => char === '@')
+  let containsSpecialChar = contains([...password], char => char === '@' || char === '!')
   let containsNoWhiteSpace = contains([...password], char => char === ' ')
   return validLength(password) && containsDigit && containsUpperCase &&
   containsLowerCase && containsSpecialChar && !containsNoWhiteSpace
