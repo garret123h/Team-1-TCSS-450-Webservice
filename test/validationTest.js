@@ -7,42 +7,38 @@ const app = require('../utilities/validationUtils.js')
 describe('Password test', function() {
 
     it('should be valid password', function () {
-        assert.strictEqual(true, app.isValidPassword("Password1@"))
+        assert.strictEqual(true, app.isValidPassword('Password1@'))
     })
 
     it('should be invalid password, does not have uppercase', function() {
-        assert.strictEqual(false, app.isValidPassword("password1@"))
+        assert.strictEqual(false, app.isValidPassword('password1@'))
     })
 
     it('should be invalid password, does not have special character', function() {
-        assert.strictEqual(false, app.isValidPassword("Password1"))
+        assert.strictEqual(false, app.isValidPassword('Password1'))
     })
 
     it('should be invalid password, does not have lowercase', function() {
-        assert.strictEqual(false, app.isValidPassword("PASSWORD1@"))
+        assert.strictEqual(false, app.isValidPassword('PASSWORD1@'))
     })
 
     it('should be invalid password, does not have digit', function() {
-        assert.strictEqual(false, app.isValidPassword("Password@"))
+        assert.strictEqual(false, app.isValidPassword('Password@'))
     })
 
     it('should be invalid password, too small', function() {
-        assert.strictEqual(false, app.isValidPassword("Pas@!"))
+        assert.strictEqual(false, app.isValidPassword('Pas@!'))
     })
 })
 
 describe('Email test', function() {
-    after(function() {
-        console.log("End Test");
-        process.exit(0)
-    });
 
     it ('should be valid email', function() {
-        assert.strictEqual(true, app.isValidEmail("mike@yahoo.com"))
+        assert.strictEqual(true, app.isValidEmail('mike@yahoo.com'))
     })
     
     it ('should be invalid, no @', function() {
-        assert.strictEqual(false, app.isValidEmail("mike!$yahoo.com"))
+        assert.strictEqual(false, app.isValidEmail('mike!$yahoo.com'))
     })
 
     it ('should be invalid, no .com', function() {
@@ -53,3 +49,21 @@ describe('Email test', function() {
         assert.strictEqual(false, app.isValidEmail(""))
     })
 })
+
+describe('Zipcode test', function() {
+    after(function() {
+        console.log("End Test");
+        process.exit(0)
+    });
+
+    it ('should be valid zipcode', function() {
+        assert.strictEqual(true, app.isValidZipcode('98021'))
+    })
+    it ('should be invalid zipcode, wrong length', function() {
+        assert.strictEqual(false, app.isValidZipcode('9802'))
+    })
+    it ('should be invalid zipcode, non digit', function() {
+        assert.strictEqual(false, app.isValidZipcode('98021G'))
+    })
+})
+
