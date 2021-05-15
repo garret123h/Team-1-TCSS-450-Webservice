@@ -66,7 +66,6 @@ router.get('/current-weather/:zipcode', (request, res) => {
         })
     }
 })
-
 /**
  *  @api {get} /current-weather/forecast/:zipcode Get 5 day weather forecast
  *  @apiName FiveDayForecast
@@ -146,5 +145,55 @@ router.get('/current-weather/:zipcode', (request, res) => {
 function partition(array, n) {
     return array.length ? [array.splice(0, n)].concat(partition(array, n)) : [];
 }
+
+/**
+ *  @api {get} /24-forecast/:zipcode Get 24 hour weather forecast
+ *  @apiName 24HourForecast
+ *  @apiGroup Weather
+ * 
+ *  @apiParam {String} zipcode location of weather to be retrieved
+ *  @apiParamExample {String} https://group1-tcss450-project.herokuapp.com/weather/24-forecast/98030
+ * 
+ *  @apiSuccess {Success 200} {
+ *      City name,
+ *      Min_temp,
+ *      Max_temp,
+ *      Weather_description
+ *  }
+ *  @apiError {400: Missing Parameters} {String} message "Missing required information"
+ *  @apiError {400: Invalid zipcode} {String} message "Invalid zipcode"
+ *  @apiError {400: other Error} {String} message "other error, see detail"
+ *  @apiError (400: Other Error) {String} detail Information about th error
+ */
+
+router.get('/24-forecast/:zipcode', (request, result) => {
+    // First validate the zipcode first.
+    if (isValidZipcode(request.params.zipcode)) {
+        let endpoint = 'https://' + weatherApiEndpointCurrent + 'zip='
+            + request.params.zipcode + ',us&appid=' + weatherAPIKey + '&units=imperial'
+
+        // Send API request to weather API
+        weatherRequest(endpoint, function (err, response, body) {
+            if (err) {
+                console.log(err)
+            } else {
+                // Extract the results
+                let json = JSON.parse(body)
+                let resultBody = {
+                    'Weather Description': json.weather[0].description,
+                    'Min Temperature': json.main.temp_min,
+                    'Max Temperature': json.main.temp_max,
+                    'City name': json.name
+                }
+                result.send(resultBody)
+            }
+        })
+    } else {
+        result.status(400).send({
+            message: "Invalid zipcode"
+        })
+    }
+
+})
 
 module.exports = router;
