@@ -61,7 +61,7 @@ router.get('/current-weather/:zipcode', (request, res) => {
         })
 
     } else {
-        response.status(400).send({
+        res.status(400).send({
             message: "Invalid zipcode"
         })
     }
@@ -135,7 +135,7 @@ router.get('/current-weather/:zipcode', (request, res) => {
         })
 
     } else {
-        response.status(400).send({
+        res.status(400).send({
             message: "Invalid zipcode"
         })
     }
