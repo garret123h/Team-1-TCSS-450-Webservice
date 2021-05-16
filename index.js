@@ -26,6 +26,10 @@ app.use(middleware.jsonErrorInBody)
  */
 app.use('/auth', require('./routes/auth.js'))
 
+// Endpoint for all weather API calls
+app.use('/weather', require('./routes/weather.js'))
+
+
 // Add home page endpoint.
 app.get("/", (request, response) => {
     // Home page can contain a link to the documentation

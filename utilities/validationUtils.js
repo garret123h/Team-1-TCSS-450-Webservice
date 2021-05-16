@@ -32,6 +32,12 @@ let contains = (param, containsValue) => {
   return param.filter(containsValue).length >= 1
 }
 
+let isValidZipcode = (zipcode) => {
+  let isValidLength = zipcode.length === 5
+  let containsNonDigits = contains([...zipcode], digit => digit < '0' || digit > '9')
+  return isValidLength && !containsNonDigits
+}
+
 module.exports = {
-  isStringProvided, isValidPassword, isValidEmail
+  isStringProvided, isValidPassword, isValidEmail, isValidZipcode
 }
