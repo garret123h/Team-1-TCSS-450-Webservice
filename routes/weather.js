@@ -13,6 +13,7 @@ const weatherAPIKey = process.env.WEATHER_API_KEY
 // Weather API endpoint needed for HTTP request
 const weatherApiEndpointCurrent = process.env.WEATHER_ENDPOINT_CURRENT
 const weatherApiEndpointForecast = process.env.WEATHER_ENDPOINT_FORECAST
+const weatherApiEndpointForecastHourly = process.env.WEATHER_ENDPOINT_HOURLY_FORECAST
 
 const router = express.Router()
 
@@ -169,7 +170,7 @@ function partition(array, n) {
 router.get('/24-forecast/:zipcode', (request, result) => {
     // First validate the zipcode first.
     if (isValidZipcode(request.params.zipcode)) {
-        let endpoint = 'https://' + weatherApiEndpointCurrent + 'zip='
+        let endpoint = 'https://' + weatherApiEndpointForecastHourly + 'zip='
             + request.params.zipcode + ',us&appid=' + weatherAPIKey + '&units=imperial'
 
         // Send API request to weather API
