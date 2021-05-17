@@ -22,6 +22,11 @@ app.use(express.json())
 app.use(middleware.jsonErrorInBody)
 
 /*
+* Setup contact endpoint for user contact
+*/
+app.use('/contacts', middleware.checkToken, require('./routes/contacts.js'))
+
+/*
  * Setup auth endpoint for user registration and login.
  */
 app.use('/auth', require('./routes/auth.js'))
