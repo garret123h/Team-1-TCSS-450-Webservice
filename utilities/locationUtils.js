@@ -27,10 +27,10 @@ let getLongLatFromZipcode = (zipcode) => {
 /** 
  * function to calculate local time
  */
- function getTimeFromTimezone(zone, offset) {
-    let date = new Date(new Date().toLocaleString("en-US", {timeZone: zone}))
+function getTimeFromTimezone(zone, offset) {
+    let date = new Date(new Date().toLocaleString("en-US", { timeZone: zone }))
     var utc = date.getTime();
-    var nd = new Date(utc + (3600000*offset));
+    var nd = new Date(utc + (3600000 * offset));
     return nd
 }
 
@@ -38,7 +38,15 @@ let getLongLatFromZipcode = (zipcode) => {
  * Increment Date by n hours
  */
 function incrementDateHour(date, nHour) {
-    return new Date(moment(date).add(nHour, 'hours').format()).toLocaleString()
+    let d = new Date(moment(date).add(nHour, 'hours').format())
+    var ampm = (d.getHours() >= 12) ? "PM" : "AM";
+    var hours = d.getHours();
+    if (hours > 12) {
+        hours -= 12;
+    } else if (hours === 0) {
+        hours = 12;
+    }
+    return hours + ":" + d.getMinutes() + ":" + d.getSeconds() + ' ' + ampm
 }
 
 module.exports = {
