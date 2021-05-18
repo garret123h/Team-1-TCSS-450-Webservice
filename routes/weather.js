@@ -189,7 +189,9 @@ router.get('/24-forecast/:zipcode', (request, result) => {
                 let json = JSON.parse(body)
                 let hourlyForecasts = json.hourly
                 let currentTime = location.getTimeFromTimezone(json.timezone, json.timezone_offset)
-                let results = []
+                let results = {
+                    "daily-forecasts": []
+                }
 
                 for (let i = 0; i < 24; i++) {
                     let hourlyForecast = hourlyForecasts[i]
@@ -198,7 +200,7 @@ router.get('/24-forecast/:zipcode', (request, result) => {
                         "Weather Description": hourlyForecast.weather[0].description,
                         "Time": location.incrementDateHour(currentTime, i)
                     }
-                    results.push(forecast)
+                    results['daily-forecasts'].push(forecast)
                 }
                 result.send(results)
             }
