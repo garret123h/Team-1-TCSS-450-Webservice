@@ -22,6 +22,11 @@ app.use(express.json())
 app.use(middleware.jsonErrorInBody)
 
 /*
+* Setup contact endpoint for user contact
+*/
+app.use('/contacts', middleware.checkToken, require('./routes/contacts.js'))
+
+/*
  * Setup auth endpoint for user registration and login.
  */
 app.use('/auth', require('./routes/auth.js'))
@@ -62,6 +67,7 @@ app.use("/doc", express.static('apidoc'))
 * You can consider 'let port = process.env.PORT || 5000' to be equivalent to:
 * let port; = process.env.PORT;
 * if(port == null) {port = 5000} 
+*
 */
 app.listen(process.env.PORT || 5000, () => {
     console.log("Server up and running on port: " + (process.env.PORT || 5000));
