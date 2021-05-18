@@ -5,11 +5,9 @@
     "title": "Lab API Doc",
     "url" : "https://group1-tcss450-project.herokuapp.com",
     "order": [
-      "Hello",
-      "Params",
-      "Wait",
-      "DemoSql",
       "Auth",
-      "Phish"
+      "Weather",
+      "Contacts",
+      "Chats"
     ]
   }
