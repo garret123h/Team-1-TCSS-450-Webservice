@@ -7,12 +7,17 @@ var weatherRequest = require('request');
 const validation = require('../utilities').validation
 let isValidZipcode = validation.isValidZipcode
 
+// Get the Longitude and latitude utility
+const location = require('../utilities').location
+const LongLatFromZipcode = location.getLongLatFromZipcode
+
 // Weather API key needed for HTTP request
 const weatherAPIKey = process.env.WEATHER_API_KEY
 
 // Weather API endpoint needed for HTTP request
 const weatherApiEndpointCurrent = process.env.WEATHER_ENDPOINT_CURRENT
 const weatherApiEndpointForecast = process.env.WEATHER_ENDPOINT_FORECAST
+const weatherApiEndpointForecastHourly = process.env.WEATHER_ENDPOINT_HOURLY_FORECAST
 
 const router = express.Router()
 
@@ -169,8 +174,11 @@ function partition(array, n) {
 router.get('/24-forecast/:zipcode', (request, result) => {
     // First validate the zipcode first.
     if (isValidZipcode(request.params.zipcode)) {
-        let endpoint = 'https://' + weatherApiEndpointCurrent + 'zip='
-            + request.params.zipcode + ',us&appid=' + weatherAPIKey + '&units=imperial'
+
+        let latLong = LongLatFromZipcode(request.params.zipcode)
+
+        let endpoint = weatherApiEndpointForecastHourly + 'lat=' + latLong[0] + 
+        '&lon=' + latLong[1] + '&exclude=current,minutely,daily,alerts' + '&appid=' + weatherAPIKey + '&units=imperial'
 
         // Send API request to weather API
         weatherRequest(endpoint, function (err, response, body) {
@@ -179,13 +187,20 @@ router.get('/24-forecast/:zipcode', (request, result) => {
             } else {
                 // Extract the results
                 let json = JSON.parse(body)
-                let resultBody = {
-                    'Weather Description': json.weather[0].description,
-                    'Min Temperature': json.main.temp_min,
-                    'Max Temperature': json.main.temp_max,
-                    'City name': json.name
+                let hourlyForecasts = json.hourly
+                let currentTime = location.getTimeFromTimezone(json.timezone, json.timezone_offset)
+                let results = []
+
+                for (let i = 0; i < 24; i++) {
+                    let hourlyForecast = hourlyForecasts[i]
+                    let forecast = {
+                        "Temperature": hourlyForecast.temp,
+                        "Weather Description": hourlyForecast.weather[0].description,
+                        "Time": location.incrementDateHour(currentTime, i)
+                    }
+                    results.push(forecast)
                 }
-                result.send(resultBody)
+                result.send(results)
             }
         })
     } else {

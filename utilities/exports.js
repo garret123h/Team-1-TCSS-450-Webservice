@@ -5,11 +5,12 @@ const pool = require('./sql_conn.js')
 const credUtils = require('./credentialingUtils')
 const generateHash = credUtils.generateHash
 const generateSalt = credUtils.generateSalt
+const location = require('./locationUtils.js')
 
 const validation = require('./validationUtils.js')
 
 const sendEmail = require('./email.js').sendEmail
 
 module.exports = { 
-    pool, generateHash, generateSalt, validation, sendEmail
+    pool, generateHash, generateSalt, validation, sendEmail, location
 }
