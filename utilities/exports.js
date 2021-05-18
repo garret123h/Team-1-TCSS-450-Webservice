@@ -5,6 +5,7 @@ const pool = require('./sql_conn.js')
 const credUtils = require('./credentialingUtils')
 const generateHash = credUtils.generateHash
 const generateSalt = credUtils.generateSalt
+const location = require('./locationUtils.js')
 
 const validation = require('./validationUtils.js')
 
