@@ -26,6 +26,8 @@ app.use(middleware.jsonErrorInBody)
 */
 app.use('/contacts', middleware.checkToken, require('./routes/contacts.js'))
 
+app.use('/resetpassword', require('./routes/emails.js'))
+
 /*
  * Setup auth endpoint for user registration and login.
  */
