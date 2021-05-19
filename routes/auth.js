@@ -184,14 +184,6 @@ router.get('/', (request, response, next) => {
                 return
             }
             
-            let verification = result.row[0].verification
-
-            if(verification == 0) {
-                response.status(404).send({
-                    message: 'User is not Verified'
-                })
-                return
-            }
 
 
             //Retrieve the salt used to create the salted-hash provided from the DB
