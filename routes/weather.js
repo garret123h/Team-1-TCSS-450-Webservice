@@ -58,6 +58,7 @@ router.get('/current-weather/:zipcode', (request, res) => {
                 let json = JSON.parse(body)
                 let result = {
                     'Weather Description': json.weather[0].description,
+                    'Icon': json.weather[0].icon,
                     'Temperature': json.main.temp,
                     'City name': json.name
                 }
@@ -124,9 +125,11 @@ router.get('/current-weather/:zipcode', (request, res) => {
                             maxTempDay = interval.main.temp_max
                     })
                     let weatherDescription = forecast[5].weather[0].description // Get the weather description for 12:00pm-3:00pm interval
+                    let icon = forecast[5].weather[0].icon
 
                     return {
                         'Weather Description': weatherDescription,
+                        'Icon': icon,
                         'Min Temperature': minTempDay,
                         'Max Temperature': maxTempDay
                     }
@@ -196,6 +199,7 @@ router.get('/24-forecast/:zipcode', (request, result) => {
                     let forecast = {
                         "Temperature": hourlyForecast.temp,
                         "Weather Description": hourlyForecast.weather[0].description,
+                        'Icon': hourlyForecast.weather[0].icon,
                         "Time": location.incrementDateHour(currentTime, i)
                     }
                     results.push(forecast)
