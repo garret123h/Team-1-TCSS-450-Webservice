@@ -145,11 +145,15 @@ router.get('/forecast/:zipcode', (request, res) => {
                             maxTempDay = interval.main.temp_max
                     })
                     let weatherDescription = forecast[5].weather[0].description // Get the weather description for 12:00pm-3:00pm interval
+                    let weatherDate = (forecast[5].dt_txt).slice(5,10) //Get the date as only mm-dd format
+                    //let weatherIcon = forecast[5].weather[0].icon  //get the icon code to later use it in android studio
 
                     return {
+                        'Date': weatherDate,
                         'Weather Description': weatherDescription,
                         'Min Temperature': minTempDay,
                         'Max Temperature': maxTempDay
+                        //'Weather Icon': weatherIcon
                     }
                 })
 
