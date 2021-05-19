@@ -28,17 +28,18 @@ const router = express.Router()
  * 
  * @apiParam {String} zipcode location of weather to be retrieved
  * 
- * @apiParamExample {String} https://group1-tcss450-project.herokuapp.com/weather/current-weather/98030
- * 
- * @apiSuccess {Success 200} {json} {
- *  Weather Description, 
- *  Temperature, 
- *  City name
+ * @apiSuccess {json} Request-Body-Example:
+ * {
+ *  "Weather Description": "cloudy", 
+ *  "Temperature": 62.5, 
+ *  "City name": "Seattle"
  * }
  * 
- * @apiError {400: Missing Parameters} {String} message "Missing required information"
- * @apiError {400: Invalid zipcode} {String} message "Invalid zipcode"
- * @apiError {400: other Error} {String} message "other error, see detail"
+ * 
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * 
+ * @apiError (400: Invalid zipcode) {String} message "Invalid zipcode"
+ * @apiError (400: other Error) {String} message "other error, see detail"
  * @apiError (400: Other Error) {String} detail Information about th error
  * 
  */
@@ -73,30 +74,50 @@ router.get('/current-weather/:zipcode', (request, res) => {
     }
 })
 /**
- *  @api {get} /current-weather/forecast/:zipcode Get 5 day weather forecast
+ *  @api {get} /weather/forecast/:zipcode Get 5 day weather forecast
  *  @apiName FiveDayForecast
  *  @apiGroup Weather
  * 
  *  @apiParam {String} zipcode location of weather to be retrieved
- *  @apiParamExample {String} https://group1-tcss450-project.herokuapp.com/weather/forecast/98030
  * 
- *  @apiSuccess {Success 200} {
- *      City name,
- *      list : [{
- *          Weather Description, 
- *          Temperature, 
- *          Min Temperature, 
- *          Max Temperature,
- *          Date
- *      }, ...
- *      ]
- *  }
- *  @apiError {400: Missing Parameters} {String} message "Missing required information"
- *  @apiError {400: Invalid zipcode} {String} message "Invalid zipcode"
- *  @apiError {400: other Error} {String} message "other error, see detail"
+ *  @apiSuccess {json} Weather-result: 
+ * {
+  "5 day forecasts": [
+    {
+      "Weather Description": "broken clouds",
+      "Min Temperature": 38.89,
+      "Max Temperature": 57.11
+    },
+    {
+      "Weather Description": "overcast clouds",
+      "Min Temperature": 39.38,
+      "Max Temperature": 57.81
+    },
+    {
+      "Weather Description": "scattered clouds",
+      "Min Temperature": 41.27,
+      "Max Temperature": 66.78
+    },
+    {
+      "Weather Description": "scattered clouds",
+      "Min Temperature": 44.02,
+      "Max Temperature": 72.86
+    },
+    {
+      "Weather Description": "overcast clouds",
+      "Min Temperature": 47.48,
+      "Max Temperature": 75.65
+    }
+  ],
+  "City": "Kent"
+}
+
+ *  @apiError (400: Missing Parameters) {String} message "Missing required information"
+ *  @apiError (400: Invalid zipcode) {String} message "Invalid zipcode"
+ *  @apiError (400: other Error) {String} message "other error, see detail"
  *  @apiError (400: Other Error) {String} detail Information about th error
  */
- router.get('/forecast/:zipcode', (request, res) => {
+router.get('/forecast/:zipcode', (request, res) => {
     // First validate the zipcode first.
     if (isValidZipcode(request.params.zipcode)) {
         let endpoint = 'https://' + weatherApiEndpointForecast + 'zip=' + request.params.zipcode +
@@ -119,19 +140,22 @@ router.get('/current-weather/:zipcode', (request, res) => {
                     var minTempDay = 1000, maxTempDay = 0
 
                     forecast.forEach(interval => { // 3 hour interval forecast
-                        if (interval.main.temp_min < minTempDay) 
+                        if (interval.main.temp_min < minTempDay)
                             minTempDay = interval.main.temp_min
                         if (interval.main.temp_max > maxTempDay)
                             maxTempDay = interval.main.temp_max
                     })
                     let weatherDescription = forecast[5].weather[0].description // Get the weather description for 12:00pm-3:00pm interval
                     let icon = forecast[5].weather[0].icon
+                    let weatherDate = (forecast[5].dt_txt).slice(5,10) //Get the date as only mm-dd format
 
                     return {
+                        'Date': weatherDate,
                         'Weather Description': weatherDescription,
                         'Icon': icon,
                         'Min Temperature': minTempDay,
                         'Max Temperature': maxTempDay
+                        //'Weather Icon': weatherIcon
                     }
                 })
 
@@ -160,17 +184,31 @@ function partition(array, n) {
  *  @apiGroup Weather
  * 
  *  @apiParam {String} zipcode location of weather to be retrieved
- *  @apiParamExample {String} https://group1-tcss450-project.herokuapp.com/weather/24-forecast/98030
  * 
- *  @apiSuccess {Success 200} {
- *      City name,
- *      Min_temp,
- *      Max_temp,
- *      Weather_description
- *  }
- *  @apiError {400: Missing Parameters} {String} message "Missing required information"
- *  @apiError {400: Invalid zipcode} {String} message "Invalid zipcode"
- *  @apiError {400: other Error} {String} message "other error, see detail"
+ *  @apiSuccess {json} Weather-result: 
+ * {
+  "daily-forecasts": [
+    {
+      "Temperature": 57.52,
+      "Weather Description": "light rain",
+      "Time": "2:16 PM"
+    },
+    {
+      "Temperature": 57.67,
+      "Weather Description": "scattered clouds",
+      "Time": "3:16 PM"
+    },
+    {
+      "Temperature": 57.02,
+      "Weather Description": "broken clouds",
+      "Time": "4:16 PM"
+    }
+  ]
+}
+
+ *  @apiError (400: Missing Parameters) {String} message "Missing required information"
+ *  @apiError (400: Invalid zipcode) {String} message "Invalid zipcode"
+ *  @apiError (400: other Error) {String} message "other error, see detail"
  *  @apiError (400: Other Error) {String} detail Information about th error
  */
 
@@ -180,8 +218,8 @@ router.get('/24-forecast/:zipcode', (request, result) => {
 
         let latLong = LongLatFromZipcode(request.params.zipcode)
 
-        let endpoint = weatherApiEndpointForecastHourly + 'lat=' + latLong[0] + 
-        '&lon=' + latLong[1] + '&exclude=current,minutely,daily,alerts' + '&appid=' + weatherAPIKey + '&units=imperial'
+        let endpoint = weatherApiEndpointForecastHourly + 'lat=' + latLong[0] +
+            '&lon=' + latLong[1] + '&exclude=current,minutely,daily,alerts' + '&appid=' + weatherAPIKey + '&units=imperial'
 
         // Send API request to weather API
         weatherRequest(endpoint, function (err, response, body) {
@@ -192,7 +230,9 @@ router.get('/24-forecast/:zipcode', (request, result) => {
                 let json = JSON.parse(body)
                 let hourlyForecasts = json.hourly
                 let currentTime = location.getTimeFromTimezone(json.timezone, json.timezone_offset)
-                let results = []
+                let results = {
+                    "daily-forecasts": []
+                }
 
                 for (let i = 0; i < 24; i++) {
                     let hourlyForecast = hourlyForecasts[i]
@@ -202,7 +242,7 @@ router.get('/24-forecast/:zipcode', (request, result) => {
                         'Icon': hourlyForecast.weather[0].icon,
                         "Time": location.incrementDateHour(currentTime, i)
                     }
-                    results.push(forecast)
+                    results['daily-forecasts'].push(forecast)
                 }
                 result.send(results)
             }
