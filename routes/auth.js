@@ -184,7 +184,7 @@ router.get('/', (request, response, next) => {
                 return
             }
             
-            let verification = request.auth.verification
+            let verification = result.row[0].verification
 
             if(verification == 0) {
                 response.status(404).send({
