@@ -155,7 +155,6 @@ router.get('/forecast/:zipcode', (request, res) => {
                         'Icon': icon,
                         'Min Temperature': minTempDay,
                         'Max Temperature': maxTempDay
-                        //'Weather Icon': weatherIcon
                     }
                 })
 
