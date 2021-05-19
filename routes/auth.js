@@ -173,7 +173,7 @@ router.get('/', (request, response, next) => {
         })
     }
 }, (request, response) => {
-    const theQuery = "SELECT Password, Salt, MemberId FROM Members WHERE Email=$1"
+    const theQuery = "SELECT Password, Salt, MemberId, Verification FROM Members WHERE Email=$1"
     const values = [request.auth.email]
     pool.query(theQuery, values)
         .then(result => {
@@ -183,6 +183,16 @@ router.get('/', (request, response, next) => {
                 })
                 return
             }
+            
+            let verification = request.auth.verification
+
+            if(verification == 0) {
+                response.status(404).send({
+                    message: 'User is not Verified'
+                })
+                return
+            }
+
 
             //Retrieve the salt used to create the salted-hash provided from the DB
             let salt = result.rows[0].salt
