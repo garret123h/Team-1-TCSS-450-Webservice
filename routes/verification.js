@@ -56,7 +56,7 @@ router.post('/send-verification/:email', (request, response) => {
  * @apiSuccess (Success 201) {String} success the password was changed
  * 
  */
-router.post('/change-password', (request, response) => {
+router.put('/change-password', (request, response) => {
 
     // Retrieve data from body
     let newPassword = request.body.newPassword
