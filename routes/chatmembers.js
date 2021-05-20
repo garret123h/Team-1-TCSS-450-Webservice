@@ -2,9 +2,12 @@
 const express = require('express')
 
 //Access the connection to Heroku Database
-let pool = require('../utilities/utils').pool
+const pool = require('../utilities/exports').pool
 
-var router = express.Router()
+const router = express.Router()
+
+const validation = require('../utilities').validation
+let isStringProvided = validation.isStringProvided
 
 //This allows parsing of the body of POST requests, that are encoded in JSON
 router.use(require("body-parser").json())
