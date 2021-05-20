@@ -387,6 +387,112 @@ define({ "api": [
     "groupTitle": "Auth"
   },
   {
+    "type": "put",
+    "url": "/:chatId/:memberId",
+    "title": "Request to add a member to a chat room.",
+    "name": "AddChatMember",
+    "group": "Chats",
+    "description": "<p>Add a user with memberId into a chat room with chatId.</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Valid JSON Web Token JWT</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "chatId",
+            "description": ""
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "memberId",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "boolean",
+            "optional": false,
+            "field": "true",
+            "description": "<p>, and the string &quot;Added member to chat!&quot;</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "400: Missing Params": [
+          {
+            "group": "400: Missing Params",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing required information&quot;</p>"
+          }
+        ],
+        "400: Invalid ChatId": [
+          {
+            "group": "400: Invalid ChatId",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Malformed parameter. chatId must be a number&quot;</p>"
+          }
+        ],
+        "404: query returns no row": [
+          {
+            "group": "404: query returns no row",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Chat ID not found!&quot;</p>"
+          }
+        ],
+        "400: SQL Error": [
+          {
+            "group": "400: SQL Error",
+            "type": "String",
+            "optional": false,
+            "field": "SQL",
+            "description": "<p>error</p>"
+          }
+        ],
+        "400: JSON Error": [
+          {
+            "group": "400: JSON Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;malformed JSON in parameters&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/chatmembers.js",
+    "groupTitle": "Chats"
+  },
+  {
     "type": "delete",
     "url": "/chats/:chatId?/:email?",
     "title": "Request delete a user from a chat",
@@ -495,6 +601,92 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/chats.js",
+    "groupTitle": "Chats"
+  },
+  {
+    "type": "get",
+    "url": "Request",
+    "title": "to get the chatrooms of a member",
+    "name": "GetChatRooms",
+    "group": "Chats",
+    "description": "<p>Retrieve the list of chat rooms the current user is associated with.</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Valid JSON Web Token JWT</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "boolean",
+            "optional": false,
+            "field": "true",
+            "description": "<p>, and the list of chats</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "400: Missing Params": [
+          {
+            "group": "400: Missing Params",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing required information&quot;</p>"
+          }
+        ],
+        "400: Invalid memberId": [
+          {
+            "group": "400: Invalid memberId",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Malformed parameter. memberId must be a number&quot;</p>"
+          }
+        ],
+        "404: query return no row": [
+          {
+            "group": "404: query return no row",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;No messages&quot;</p>"
+          }
+        ],
+        "400: SQL Error": [
+          {
+            "group": "400: SQL Error",
+            "type": "String",
+            "optional": false,
+            "field": "SQL",
+            "description": "<p>error</p>"
+          }
+        ],
+        "400: JSON Error": [
+          {
+            "group": "400: JSON Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;malformed JSON in parameters&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/chatrooms.js",
     "groupTitle": "Chats"
   },
   {
@@ -832,12 +1024,83 @@ define({ "api": [
     "groupTitle": "Chats"
   },
   {
+    "type": "Delete",
+    "url": "/contacts/delete",
+    "title": "Delete the existing contact list",
+    "name": "DeleteContacts",
+    "group": "Contacts",
+    "description": "<p>Delete the existing contacts from contact list.</p>",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>&quot;true&quot;</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Contact was deleted&quot;</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "400: SQL ERROR": [
+          {
+            "group": "400: SQL ERROR",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing required information&quot;</p>"
+          }
+        ],
+        "404: No User Found": [
+          {
+            "group": "404: No User Found",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;User is not existing&quot;</p>"
+          }
+        ],
+        "404: No Contact Found": [
+          {
+            "group": "404: No Contact Found",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Contact is not existing&quot;</p>"
+          }
+        ],
+        "400: JSON Error": [
+          {
+            "group": "400: JSON Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;malformed JSON in parameters&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/contacts.js",
+    "groupTitle": "Contacts"
+  },
+  {
     "type": "get",
     "url": "/contacts",
-    "title": "Request to get friends contact list",
-    "name": "GetContacts",
+    "title": "Get friend contact list which was verified by user",
+    "name": "GetFriendContacts",
     "group": "Contacts",
-    "description": "<p>Request to get friends contact list</p>",
+    "description": "<p>Request to get friends contact list from database</p>",
     "success": {
       "fields": {
         "Success 200": [
@@ -846,29 +1109,38 @@ define({ "api": [
             "type": "Object[]",
             "optional": false,
             "field": "friend",
-            "description": "<p>contacts List of contacts</p>"
+            "description": "<p>contacts List which includes email, firstname, lastname, username, memberid, and verified</p>"
           }
         ]
       }
     },
     "error": {
       "fields": {
-        "404: memberId Not Found": [
+        "400: SQL ERROR": [
           {
-            "group": "404: memberId Not Found",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>&quot;No friends contacts were found&quot;</p>"
-          }
-        ],
-        "400: SQL Error": [
-          {
-            "group": "400: SQL Error",
+            "group": "400: SQL ERROR",
             "type": "String",
             "optional": false,
             "field": "message",
             "description": "<p>&quot;Missing required information&quot;</p>"
+          }
+        ],
+        "404: No contacts list": [
+          {
+            "group": "404: No contacts list",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;No contacts were found&quot;</p>"
+          }
+        ],
+        "404: No verified contacts list": [
+          {
+            "group": "404: No verified contacts list",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;No verified contact lists&quot;</p>"
           }
         ],
         "400: JSON Error": [
@@ -889,8 +1161,8 @@ define({ "api": [
   {
     "type": "get",
     "url": "/contacts/search",
-    "title": "To search the new contacts who doesn't in friend list",
-    "name": "GetContacts",
+    "title": "get search contact list who doesn't in user's contact(friend) list",
+    "name": "GetSearchContacts",
     "group": "Contacts",
     "description": "<p>search the new contacts who doesn't in friend list</p>",
     "success": {
@@ -901,29 +1173,100 @@ define({ "api": [
             "type": "Object[]",
             "optional": false,
             "field": "contacts",
-            "description": "<p>List who is not friends</p>"
+            "description": "<p>List who doesn't in friend list and it includes email, firstname, lastname, username, and memberid info</p>"
           }
         ]
       }
     },
     "error": {
       "fields": {
-        "404: Not Found": [
+        "400: SQL ERROR": [
           {
-            "group": "404: Not Found",
+            "group": "400: SQL ERROR",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing required information&quot;</p>"
+          }
+        ],
+        "404: Contacts Not Found": [
+          {
+            "group": "404: Contacts Not Found",
             "type": "String",
             "optional": false,
             "field": "message",
             "description": "<p>&quot;No search contacts were found&quot;</p>"
           }
         ],
-        "400: SQL Error": [
+        "400: JSON Error": [
           {
-            "group": "400: SQL Error",
+            "group": "400: JSON Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;malformed JSON in parameters&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/contacts.js",
+    "groupTitle": "Contacts"
+  },
+  {
+    "type": "post",
+    "url": "/contacts/create",
+    "title": "Post to create the new contacts",
+    "name": "PostContacts",
+    "group": "Contacts",
+    "description": "<p>Create the new contacts by sending specific memberid selection from the search list.</p>",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>&quot;true&quot;</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;New Contact was created&quot;</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "400: SQL ERROR": [
+          {
+            "group": "400: SQL ERROR",
             "type": "String",
             "optional": false,
             "field": "message",
             "description": "<p>&quot;Missing required information&quot;</p>"
+          }
+        ],
+        "404: User Not found": [
+          {
+            "group": "404: User Not found",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;User is not existing&quot;</p>"
+          }
+        ],
+        "404: Existing Contacts": [
+          {
+            "group": "404: Existing Contacts",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Contact is already existing&quot;</p>"
           }
         ],
         "400: JSON Error": [
@@ -1174,6 +1517,302 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/messages.js",
     "groupTitle": "Messages"
+  },
+  {
+    "type": "get",
+    "url": "/resetpassword",
+    "title": "Request to get whether a user needs to set a new password",
+    "name": "GetResetpassword",
+    "group": "Resetpassword",
+    "body": [
+      {
+        "group": "Body",
+        "type": "String",
+        "optional": false,
+        "field": "email",
+        "description": "<p>the email of the user to check</p>"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>true when the user was found</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "boolean",
+            "optional": false,
+            "field": "passwordneeded",
+            "description": "<p>true when the user requires setting a new password</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "400: Missing Parameters": [
+          {
+            "group": "400: Missing Parameters",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing required information&quot;</p>"
+          }
+        ],
+        "400: SQL Error": [
+          {
+            "group": "400: SQL Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>the reported SQL error details</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/emails.js",
+    "groupTitle": "Resetpassword"
+  },
+  {
+    "type": "post",
+    "url": "/resetpassword",
+    "title": "Request to get whether a user needs to set a new password",
+    "name": "PostResetpassword",
+    "group": "Resetpassword",
+    "body": [
+      {
+        "group": "Body",
+        "type": "String",
+        "optional": false,
+        "field": "email",
+        "description": "<p>the email of the user's password is to be reset</p>"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>true when the user was found and their password reset. an email will be sent to the given address with a new temporary password</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>the confirmation message returned when sending the email</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "400: Missing Parameters": [
+          {
+            "group": "400: Missing Parameters",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing required information&quot;</p>"
+          }
+        ],
+        "400: SQL Error": [
+          {
+            "group": "400: SQL Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>the reported SQL error details</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/emails.js",
+    "groupTitle": "Resetpassword"
+  },
+  {
+    "type": "put",
+    "url": "/resetpassword",
+    "title": "Request to get whether a user needs to set a new password",
+    "name": "PutResetpassword",
+    "group": "Resetpassword",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Valid basic auth formatted email:password combination using the temporary password</p>"
+          }
+        ]
+      }
+    },
+    "body": [
+      {
+        "group": "Body",
+        "type": "String",
+        "optional": false,
+        "field": "newpassword",
+        "description": "<p>the new password to set the user's password to</p>"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>true when the user was found</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>New password set when succesful</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "404: Unknown User": [
+          {
+            "group": "404: Unknown User",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>User not found</p>"
+          }
+        ],
+        "404: No Reset Needed": [
+          {
+            "group": "404: No Reset Needed",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>A new password has not been requested</p>"
+          }
+        ],
+        "400: Missing Parameters": [
+          {
+            "group": "400: Missing Parameters",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing required information&quot;</p>"
+          }
+        ],
+        "400: SQL Error": [
+          {
+            "group": "400: SQL Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>the reported SQL error details</p>"
+          }
+        ],
+        "400: Bad Credentials": [
+          {
+            "group": "400: Bad Credentials",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Credentials did not match</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/emails.js",
+    "groupTitle": "Resetpassword"
+  },
+  {
+    "type": "post",
+    "url": "/change-password",
+    "title": "Change password of user",
+    "name": "ChangePassword",
+    "group": "Verification",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>a users Email</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "newPassword",
+            "description": "<p>Update password to this password</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Example:",
+          "content": "{\n\"email\": \"mike@yahoo.com\",\n\"newPassword\": \"testPassword\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "fields": {
+        "Success 201": [
+          {
+            "group": "Success 201",
+            "type": "String",
+            "optional": false,
+            "field": "success",
+            "description": "<p>the password was changed</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/verification.js",
+    "groupTitle": "Verification"
+  },
+  {
+    "type": "post",
+    "url": "/send-verification",
+    "title": "Send verification email to user",
+    "name": "SendVerification",
+    "group": "Verification",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>The email to send the verification code to</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/verification.js",
+    "groupTitle": "Verification"
   },
   {
     "type": "get",

@@ -10,13 +10,15 @@ var router = express.Router()
 router.use(require("body-parser").json())
 
 /**
- * @api {get} Get the chatrooms of a member
+ * @api {get} Request to get the chatrooms of a member
  * @apiName GetChatRooms
- * @apiGroup Chat
+ * @apiGroup Chats
  * 
  * @apiDescription Retrieve the list of chat rooms the current user is associated with.
  * 
- * @apiSuccess {boolean, list} true, and the list of chats
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * 
+ * @apiSuccess {boolean} true, and the list of chats
  * 
  * @apiError (400: Missing Params) {String} message "Missing required information"
  * @apiError (400: Invalid memberId) {String} message "Malformed parameter. memberId must be a number"

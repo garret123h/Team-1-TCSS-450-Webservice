@@ -10,16 +10,18 @@ var router = express.Router()
 router.use(require("body-parser").json())
 
 /**
- * @api {put} /:chatId/:memberId Add a member to a chat room.
+ * @api {put} /:chatId/:memberId Request to add a member to a chat room.
  * @apiName AddChatMember
- * @apiGroup Chat
+ * @apiGroup Chats
  * 
  * @apiDescription Add a user with memberId into a chat room with chatId.
+ *
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
  * 
  * @apiParam {number} chatId
  * @apiParam {number} memberId
  * 
- * @apiSuccess {boolean, string} true, "Added member to chat!"
+ * @apiSuccess {boolean} true, and the string "Added member to chat!"
  * 
  * @apiError (400: Missing Params) {String} message "Missing required information"
  * @apiError (400: Invalid ChatId) {String} message "Malformed parameter. chatId must be a number"
