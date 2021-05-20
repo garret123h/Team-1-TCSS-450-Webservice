@@ -194,7 +194,7 @@ router.get("/", (request, response, next) => {
 
 
 /**
- * @api {get} /contacts/search get search contact list who doesn't in user's contact(friend) list 
+ * @api {get} /contacts/search Get search contact list who doesn't in user's contact(friend) list 
  * @apiName GetSearchContacts
  * @apiGroup Contacts
  * 

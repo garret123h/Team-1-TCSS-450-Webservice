@@ -389,7 +389,7 @@ define({ "api": [
   {
     "type": "put",
     "url": "/:chatId/:memberId",
-    "title": "Request to add a member to a chat room.",
+    "title": "Request to add a member to a chat room",
     "name": "AddChatMember",
     "group": "Chats",
     "description": "<p>Add a user with memberId into a chat room with chatId.</p>",
@@ -414,27 +414,34 @@ define({ "api": [
             "type": "number",
             "optional": false,
             "field": "chatId",
-            "description": ""
+            "description": "<p>the chatId of the chat room</p>"
           },
           {
             "group": "Parameter",
             "type": "number",
             "optional": false,
             "field": "memberId",
-            "description": ""
+            "description": "<p>the memberId of the user</p>"
           }
         ]
       }
     },
     "success": {
       "fields": {
-        "Success 200": [
+        "Success 201": [
           {
-            "group": "Success 200",
+            "group": "Success 201",
             "type": "boolean",
             "optional": false,
-            "field": "true",
-            "description": "<p>, and the string &quot;Added member to chat!&quot;</p>"
+            "field": "success",
+            "description": "<p>true when the member is added</p>"
+          },
+          {
+            "group": "Success 201",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Added member to chat!&quot; when the member is added</p>"
           }
         ]
       }
@@ -605,8 +612,8 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "Request",
-    "title": "to get the chatrooms of a member",
+    "url": "/chatrooms",
+    "title": "Request to get the chatrooms of a member",
     "name": "GetChatRooms",
     "group": "Chats",
     "description": "<p>Retrieve the list of chat rooms the current user is associated with.</p>",
@@ -625,13 +632,20 @@ define({ "api": [
     },
     "success": {
       "fields": {
-        "Success 200": [
+        "Success 201": [
           {
-            "group": "Success 200",
+            "group": "Success 201",
             "type": "boolean",
             "optional": false,
-            "field": "true",
-            "description": "<p>, and the list of chats</p>"
+            "field": "success",
+            "description": "<p>true when the chat rooms are retrieved</p>"
+          },
+          {
+            "group": "Success 201",
+            "type": "list",
+            "optional": false,
+            "field": "chats",
+            "description": "<p>the list of chat rooms</p>"
           }
         ]
       }
@@ -1161,7 +1175,7 @@ define({ "api": [
   {
     "type": "get",
     "url": "/contacts/search",
-    "title": "get search contact list who doesn't in user's contact(friend) list",
+    "title": "Get search contact list who doesn't in user's contact(friend) list",
     "name": "GetSearchContacts",
     "group": "Contacts",
     "description": "<p>search the new contacts who doesn't in friend list</p>",
