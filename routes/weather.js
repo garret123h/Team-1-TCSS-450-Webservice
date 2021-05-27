@@ -190,17 +190,17 @@ function partition(array, n) {
     {
       "Temperature": 57.52,
       "Weather Description": "light rain",
-      "Time": "2:16 PM"
+      "Time": "2:00 PM"
     },
     {
       "Temperature": 57.67,
       "Weather Description": "scattered clouds",
-      "Time": "3:16 PM"
+      "Time": "3:00 PM"
     },
     {
       "Temperature": 57.02,
       "Weather Description": "broken clouds",
-      "Time": "4:16 PM"
+      "Time": "4:00 PM"
     }
   ]
 }
