@@ -46,7 +46,7 @@ function incrementDateHour(date, nHour) {
     } else if (hours === 0) {
         hours = 12;
     }
-    return hours + ":" + d.getMinutes() + ' ' + ampm
+    return hours + ':00' + ampm
 }
 
 module.exports = {
