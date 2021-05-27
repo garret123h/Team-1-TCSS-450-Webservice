@@ -93,7 +93,7 @@ var router = express.Router()
         })
 }, (request, response) => {
     let query = 'INSERT INTO Contacts (MemberID_A, MemberID_B, Verified) VALUES ($1, $2, 1)'
-    let query2 = 'INSERT INTO Contacts (MemberID_B, MemberID_A, Verified) VALUES ($2, $1, 0)'
+    let query2 = 'INSERT INTO Contacts (MemberID_A, MemberID_B, Verified) VALUES ($2, $1, 0)'
     let values = [request.decoded.memberid, request.body.memberid]
     pool.query(query, values).then(
         pool.query(query2, values),
@@ -157,7 +157,7 @@ router.get("/", (request, response, next) => {
             })
         })
 }, (request, response) => {
-    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Contacts.MemberID_B, Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Verified=1'
+    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_A = Members.MemberID where Contacts.MemberID_B = $1 and Verified=1'
     let values = [request.decoded.memberid]
     pool.query(query, values)
         .then(result => {
@@ -174,7 +174,7 @@ router.get("/", (request, response, next) => {
                             "firstName": entry.firstname,
                             "lastName": entry.lastname,
                             "userName": entry.username,
-                            "memberId": entry.memberid_b,
+                            "memberId": entry.memberid,
                             "verified": entry.verified
                         }
                     )
@@ -276,12 +276,12 @@ router.get("/", (request, response, next) => {
  * 
  * @apiUse JSONError
  */
- router.delete('/delete', (request, response, next) => {
-    if (!request.body.memberid) {
+ router.delete("/delete/:memberid?", (request, response, next) => {
+    if (!request.params.memberid) {
         response.status(400).send({
             message: "Missing required information"
         })
-    } else if (isNaN(request.body.memberid)) {
+    } else if (isNaN(request.params.memberid)) {
         response.status(400).send({
             message: "Malformed parameter"
         })
@@ -290,7 +290,7 @@ router.get("/", (request, response, next) => {
     }
 },(request, response, next) => {
     let query = `SELECT MemberID, FirstName, LastName,Username,Email FROM Members WHERE MemberID=$1`
-    let values = [request.body.memberid]
+    let values = [request.params.memberid]
     pool.query(query, values)
         .then(result => {
             if (result.rowCount > 0) {
@@ -308,7 +308,7 @@ router.get("/", (request, response, next) => {
         })
 }, (request, response, next) => { 
     let query = `SELECT MemberID_A, MemberID_B FROM Contacts WHERE MemberID_A=$1 AND MemberID_B=$2`
-    let values = [request.decoded.memberid, request.body.memberid]
+    let values = [request.decoded.memberid, request.params.memberid]
 
     pool.query(query, values)
         .then(result => {
@@ -327,7 +327,7 @@ router.get("/", (request, response, next) => {
         })
 }, (request, response, next) => {
     let query = `SELECT MemberID_A, MemberID_B FROM Contacts WHERE MemberID_A=$2 AND MemberID_B=$1`
-    let values = [request.decoded.memberid, request.body.memberid]
+    let values = [request.decoded.memberid, request.params.memberid]
     pool.query(query, values)
         .then(result => {
             if (result.rowCount > 0) {
@@ -346,7 +346,7 @@ router.get("/", (request, response, next) => {
 }, (request, response) => { 
     let query = 'DELETE FROM Contacts WHERE MemberID_A = $2 AND MemberID_B = $1'
     let query2 = 'DELETE FROM Contacts WHERE MemberID_B =  $2 AND MemberID_A = $1'
-    let values = [request.decoded.memberid, request.body.memberid]
+    let values = [request.decoded.memberid, request.params.memberid]
     
     pool.query(query, values).then(
         pool.query(query2, values),
@@ -362,4 +362,54 @@ router.get("/", (request, response, next) => {
     })
 })
 
+
+router.get("/request", (request, response, next) => {
+    if (!request.decoded.memberid) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else if (isNaN(request.decoded.memberid)) {
+        response.status(400).send({
+            message: "Malformed parameter"
+        })
+    } else {
+        next()
+    }
+}, (request, response) => {
+    //Get contact info
+    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_A = Members.MemberID where Contacts.MemberID_B = $1 and Verified=0'
+    // let query = 'SELECT Verified, MemberID_B, Members.FirstName, Members.LastName, Members.email, Members.Username FROM Contacts INNER JOIN Members ON Contacts.MemberID_B = Members.MemberID WHERE Contacts.MemberID_A = $1'
+    let values = [request.decoded.memberid]
+    console.log(request.decoded.memberid);
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "No request"
+                })
+            } else {
+                let listRequest = [];
+                result.rows.forEach(entry => {
+                        listRequest.push(
+                        {
+                            "email": entry.email,
+                            "firstName": entry.firstname,
+                            "lastName": entry.lastname,
+                            "userName": entry.username,
+                            "memberId": entry.memberid,
+                            "verified": entry.verified
+                        })
+                })
+                response.send({
+                    success: true,
+                    request: listRequest
+                })
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+});
 module.exports = router
