@@ -93,7 +93,7 @@ var router = express.Router()
         })
 }, (request, response) => {
     let query = 'INSERT INTO Contacts (MemberID_A, MemberID_B, Verified) VALUES ($1, $2, 1)'
-    let query2 = 'INSERT INTO Contacts (MemberID_B, MemberID_A, Verified) VALUES ($2, $1, 0)'
+    let query2 = 'INSERT INTO Contacts (MemberID_A, MemberID_B, Verified) VALUES ($2, $1, 0)'
     let values = [request.decoded.memberid, request.body.memberid]
     pool.query(query, values).then(
         pool.query(query2, values),
@@ -276,12 +276,13 @@ router.get("/", (request, response, next) => {
  * 
  * @apiUse JSONError
  */
- router.delete('/delete', (request, response, next) => {
-    if (!request.body.memberid) {
+ router.delete("/delete/:memberid?", (request, response, next) => {
+     console.log(request.params.memberid);
+    if (!request.params.memberid) {
         response.status(400).send({
             message: "Missing required information"
         })
-    } else if (isNaN(request.body.memberid)) {
+    } else if (isNaN(request.params.memberid)) {
         response.status(400).send({
             message: "Malformed parameter"
         })
@@ -290,7 +291,7 @@ router.get("/", (request, response, next) => {
     }
 },(request, response, next) => {
     let query = `SELECT MemberID, FirstName, LastName,Username,Email FROM Members WHERE MemberID=$1`
-    let values = [request.body.memberid]
+    let values = [request.params.memberid]
     pool.query(query, values)
         .then(result => {
             if (result.rowCount > 0) {
@@ -308,7 +309,7 @@ router.get("/", (request, response, next) => {
         })
 }, (request, response, next) => { 
     let query = `SELECT MemberID_A, MemberID_B FROM Contacts WHERE MemberID_A=$1 AND MemberID_B=$2`
-    let values = [request.decoded.memberid, request.body.memberid]
+    let values = [request.decoded.memberid, request.params.memberid]
 
     pool.query(query, values)
         .then(result => {
@@ -316,7 +317,7 @@ router.get("/", (request, response, next) => {
                 next()
             }else {
                 response.status(404).send({
-                    message: "Contact is not existing"
+                    message: "Contact is not existing1"
                 })
             }
         }).catch(error => {
@@ -327,14 +328,14 @@ router.get("/", (request, response, next) => {
         })
 }, (request, response, next) => {
     let query = `SELECT MemberID_A, MemberID_B FROM Contacts WHERE MemberID_A=$2 AND MemberID_B=$1`
-    let values = [request.decoded.memberid, request.body.memberid]
+    let values = [request.decoded.memberid, request.params.memberid]
     pool.query(query, values)
         .then(result => {
             if (result.rowCount > 0) {
                 next()
             }else {
                 response.status(404).send({
-                    message: "Contact is not existing"
+                    message: "Contact is not existing2"
                 })
             }
         }).catch(error => {
@@ -346,7 +347,7 @@ router.get("/", (request, response, next) => {
 }, (request, response) => { 
     let query = 'DELETE FROM Contacts WHERE MemberID_A = $2 AND MemberID_B = $1'
     let query2 = 'DELETE FROM Contacts WHERE MemberID_B =  $2 AND MemberID_A = $1'
-    let values = [request.decoded.memberid, request.body.memberid]
+    let values = [request.decoded.memberid, request.params.memberid]
     
     pool.query(query, values).then(
         pool.query(query2, values),
@@ -363,3 +364,4 @@ router.get("/", (request, response, next) => {
 })
 
 module.exports = router
+
