@@ -157,7 +157,7 @@ router.get("/", (request, response, next) => {
             })
         })
 }, (request, response) => {
-    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Contacts.MemberID_B, Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Verified=1'
+    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_A = Members.MemberID where Contacts.MemberID_B = $1 and Verified=1'
     let values = [request.decoded.memberid]
     pool.query(query, values)
         .then(result => {
@@ -174,7 +174,7 @@ router.get("/", (request, response, next) => {
                             "firstName": entry.firstname,
                             "lastName": entry.lastname,
                             "userName": entry.username,
-                            "memberId": entry.memberid_b,
+                            "memberId": entry.memberid,
                             "verified": entry.verified
                         }
                     )
@@ -277,7 +277,6 @@ router.get("/", (request, response, next) => {
  * @apiUse JSONError
  */
  router.delete("/delete/:memberid?", (request, response, next) => {
-     console.log(request.params.memberid);
     if (!request.params.memberid) {
         response.status(400).send({
             message: "Missing required information"
@@ -363,5 +362,55 @@ router.get("/", (request, response, next) => {
     })
 })
 
+
+router.get("/request", (request, response, next) => {
+    if (!request.decoded.memberid) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else if (isNaN(request.decoded.memberid)) {
+        response.status(400).send({
+            message: "Malformed parameter"
+        })
+    } else {
+        next()
+    }
+}, (request, response) => {
+    //Get contact info
+    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_A = Members.MemberID where Contacts.MemberID_B = $1 and Verified=0'
+    // let query = 'SELECT Verified, MemberID_B, Members.FirstName, Members.LastName, Members.email, Members.Username FROM Contacts INNER JOIN Members ON Contacts.MemberID_B = Members.MemberID WHERE Contacts.MemberID_A = $1'
+    let values = [request.decoded.memberid]
+    console.log(request.decoded.memberid);
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "No request"
+                })
+            } else {
+                let listRequest = [];
+                result.rows.forEach(entry => {
+                        listRequest.push(
+                        {
+                            "email": entry.email,
+                            "firstName": entry.firstname,
+                            "lastName": entry.lastname,
+                            "userName": entry.username,
+                            "memberId": entry.memberid,
+                            "verified": entry.verified
+                        })
+                })
+                response.send({
+                    success: true,
+                    request: listRequest
+                })
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+});
 module.exports = router
 
