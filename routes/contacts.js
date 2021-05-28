@@ -377,7 +377,7 @@ router.get("/request", (request, response, next) => {
     }
 }, (request, response) => {
     //Get contact info
-    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_A = Members.MemberID where Contacts.MemberID_B = $1 and Verified=0'
+    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Contacts.Verified=0'
     // let query = 'SELECT Verified, MemberID_B, Members.FirstName, Members.LastName, Members.email, Members.Username FROM Contacts INNER JOIN Members ON Contacts.MemberID_B = Members.MemberID WHERE Contacts.MemberID_A = $1'
     let values = [request.decoded.memberid]
     console.log(request.decoded.memberid);
