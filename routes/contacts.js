@@ -157,7 +157,8 @@ router.get("/", (request, response, next) => {
             })
         })
 }, (request, response) => {
-    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_A = Members.MemberID where Contacts.MemberID_B = $1 and Verified=1'
+    //let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_A = Members.MemberID where Contacts.MemberID_B = $1 and Verified=1'
+    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Contacts.Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Contacts.Verified=1'
     let values = [request.decoded.memberid]
     pool.query(query, values)
         .then(result => {
