@@ -364,7 +364,6 @@ router.get("/request", (request, response, next) => {
         next()
     }
 }, (request, response) => {
-    //Get contact info
     let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Contacts.Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Contacts.Verified=0'
     let values = [request.decoded.memberid]
     console.log(request.decoded.memberid);

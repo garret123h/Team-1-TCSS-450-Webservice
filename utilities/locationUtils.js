@@ -21,7 +21,10 @@ rl.on('line', (line) => {
  * @param {String} zipcode The zipcode to convert to longitude and latitude
  */
 let getLongLatFromZipcode = (zipcode) => {
-    return map[zipcode]
+    let latlong = map[zipcode]
+    latlong[0] = latlong[0].replace(/\s+/g, '')
+    latlong[1] = latlong[1].replace(/\s+/g, '')
+    return latlong
 }
 
 /** 
@@ -46,7 +49,7 @@ function incrementDateHour(date, nHour) {
     } else if (hours === 0) {
         hours = 12;
     }
-    return hours + ":" + d.getMinutes() + ' ' + ampm
+    return hours + ':00' + ampm
 }
 
 module.exports = {
