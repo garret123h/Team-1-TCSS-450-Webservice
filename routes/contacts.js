@@ -138,27 +138,10 @@ router.get("/", (request, response, next) => {
     } else {
         next()
     }
-},(request, response, next) => {
-    let query = 'SELECT MemberID_A, MemberID_B FROM Contacts WHERE MemberID_A=$1 and Verified=1'
-    let values = [request.decoded.memberid]
-    pool.query(query, values)
-        .then(result => {
-            if (result.rowCount > 0) {
-                next()
-            }else {
-                response.status(404).send({
-                    message: "No contacts were found"
-                })
-            }
-        }).catch(error => {
-            response.status(400).send({
-                message: "SQL Error",
-                error: error
-            })
-        })
 }, (request, response) => {
-    //let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_A = Members.MemberID where Contacts.MemberID_B = $1 and Verified=1'
-    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Contacts.Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Contacts.Verified=1'
+//    let query = 'SELECT Members.FirstName, Members.LastName, Members.email, Members.Username, MemberID_A, Verified FROM Contacts INNER JOIN Members ON Contacts.MemberID_A = Members.MemberID where Contacts.MemberID_B = $1'//and Contacts.Verified=1
+//let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Verified IN (SELECT Verified from Contacts where MemberID_B = $1)'
+let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Contacts.MemberID_B IN (SELECT MemberID_A from Contacts where MemberID_B = $1 and Verified=1)'
     let values = [request.decoded.memberid]
     pool.query(query, values)
         .then(result => {
@@ -317,7 +300,7 @@ router.get("/", (request, response, next) => {
                 next()
             }else {
                 response.status(404).send({
-                    message: "Contact is not existing1"
+                    message: "Contact is not existing"
                 })
             }
         }).catch(error => {
@@ -335,7 +318,7 @@ router.get("/", (request, response, next) => {
                 next()
             }else {
                 response.status(404).send({
-                    message: "Contact is not existing2"
+                    message: "Contact is not existing"
                 })
             }
         }).catch(error => {
@@ -363,7 +346,11 @@ router.get("/", (request, response, next) => {
     })
 })
 
-
+/**
+ * @api {Get} /request friend request list
+ * @apiName getFriendRequest
+ * @apiGroup Contacts
+ */
 router.get("/request", (request, response, next) => {
     if (!request.decoded.memberid) {
         response.status(400).send({
@@ -377,9 +364,7 @@ router.get("/request", (request, response, next) => {
         next()
     }
 }, (request, response) => {
-    //Get contact info
-    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Contacts.Verified=0'
-    // let query = 'SELECT Verified, MemberID_B, Members.FirstName, Members.LastName, Members.email, Members.Username FROM Contacts INNER JOIN Members ON Contacts.MemberID_B = Members.MemberID WHERE Contacts.MemberID_A = $1'
+    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Contacts.Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Contacts.Verified=0'
     let values = [request.decoded.memberid]
     console.log(request.decoded.memberid);
     pool.query(query, values)
@@ -413,5 +398,50 @@ router.get("/request", (request, response, next) => {
             })
         })
 });
+
+
+/**
+ * @api {post} /accept Accept friend request
+ * @apiName acceptFriendRequest
+ * @apiGroup Contacts
+ */
+ router.post("/accept", (request, response, next) => {
+    if (!request.body.memberId) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else if (isNaN(request.body.memberId)) {
+        response.status(400).send({
+            message: "Malformed parameter"
+        })
+    } else {
+        next()
+    }
+}, (request, response) => {
+    let query = 'UPDATE Contacts SET Verified = 1 WHERE MemberID_A = $1 AND MemberID_B = $2'
+    let query2 = 'UPDATE Contacts SET Verified = 1 WHERE MemberID_B = $1 AND MemberID_A = $2'
+    let values = [request.decoded.memberid, request.body.memberId]
+
+    pool.query(query, values).then(result => {
+        pool.query(query2, values)
+        response.send({
+            success: true,
+            message: "Request was accepted"
+        })
+    }).catch(error => {
+        response.status(400).send({
+            message: "SQL Error",
+            error: error
+        })
+    })
+})
+
+
+
+
+
+
+
 module.exports = router
+
 
