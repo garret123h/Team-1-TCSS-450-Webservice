@@ -92,7 +92,7 @@ router.put('/change-password', (request, response) => {
 
 /**
  * @api {get} /check-verify/:email Check if a user has been verified
- * @apiName VerifyUser
+ * @apiName CheckVerify 
  * @apiGroup Auth
  * 
  * @apiHeader {String} email "email" 
@@ -136,6 +136,42 @@ router.get('/check-verify/:email', (request, response, next) => {
                         })
                     }
                 }
+            })
+            .catch((error) => {
+                console.log(error)
+                response.status(400).send()
+            })
+    } else {
+        response.status(400).send({
+            message: "Invalid Email!"
+        })
+    }
+})
+
+/**
+ * @api {get} /verify-user/:email Verify user
+ * @apiName VerifyUser 
+ * @apiGroup Auth
+ * 
+ * @apiHeader {String} email "email" 
+ * 
+ * @apiSuccess (200: Success)
+ * 
+ * @apiError (400: Missing Authorization Header) {String} message "Missing user"
+ * 
+ * @apiError (400: Malformed Authorization Header) {String} message "Malformed Authorization Header"
+ * 
+ * @apiError (404: User Not Found) {String} message "User not found"
+ * 
+ */
+router.post('/verify-user/:email', (request, response) => {
+    const email = request.params.email
+    if (isValidEmail(email)) {
+        let query = 'UPDATE MEMBERS SET verification=1 WHERE email=$1'
+        let values = [1]
+        pool.query(query, values)
+            .then(result => {
+                response.status(200).send()
             })
             .catch((error) => {
                 console.log(error)
