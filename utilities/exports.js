@@ -12,7 +12,8 @@ const validation = require('./validationUtils.js')
 const sendEmail = require('./email.js').sendEmail
 
 let messaging = require('./pushy_utilities.js')
+let requesting = require('./pushy_utilities.js')
 
 module.exports = { 
-    pool, generateHash, generateSalt, validation, sendEmail, messaging, location
+    pool, generateHash, generateSalt, validation, sendEmail, messaging, location, requesting
 }

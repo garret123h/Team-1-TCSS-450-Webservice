@@ -3,6 +3,7 @@ const express = require('express')
 // //Access the connection to Heroku Database
 const pool = require('../utilities').pool
 
+const request_functions = require('../utilities/exports').requesting
 var router = express.Router()
 
 /**
@@ -91,15 +92,15 @@ var router = express.Router()
                 error: error
             })
         })
-}, (request, response) => {
+}, (request, response, next) => {
     let query = 'INSERT INTO Contacts (MemberID_A, MemberID_B, Verified) VALUES ($1, $2, 1)'
     let query2 = 'INSERT INTO Contacts (MemberID_A, MemberID_B, Verified) VALUES ($2, $1, 0)'
     let values = [request.decoded.memberid, request.body.memberid]
     pool.query(query, values).then(
-        pool.query(query2, values),
-        response.send({
-            success: true,
-            message: "New Contact was created"
+        pool.query(query2, values).then(result=>{
+            response.success = true,
+            response.message = "New Contact Request",  
+            next()
         })
     ).catch (error => {
         response.status(400).send({
@@ -107,6 +108,31 @@ var router = express.Router()
             error: error
         })
     })
+}, (request, response) => {
+        let query = `SELECT token FROM Push_Token WHERE Push_Token.memberid=$1`        
+        let values = [request.body.memberid]
+        pool.query(query, values)
+            .then(result => {
+                console.log(request.decoded.memberid)
+                console.log(request.body.memberid)
+                console.log(request.decoded.email)
+                result.rows.forEach(entry => 
+                    request_functions.sendRequestToIndividual(
+                        entry.token,
+                        request.decoded.email,
+                        request.decoded.memberid,
+                        request.body.memberid
+                        )
+                        )
+                response.send({
+                    success:true
+                })
+            }).catch(err => {
+                response.status(400).send({
+                    message: "SQL Error on select from push token",
+                    error: err
+                })
+            })
 })
 
 /**
@@ -364,6 +390,7 @@ router.get("/request", (request, response, next) => {
         next()
     }
 }, (request, response) => {
+    //Get contact info
     let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Contacts.Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Contacts.Verified=0'
     let values = [request.decoded.memberid]
     console.log(request.decoded.memberid);
@@ -443,5 +470,3 @@ router.get("/request", (request, response, next) => {
 
 
 module.exports = router
-
-
