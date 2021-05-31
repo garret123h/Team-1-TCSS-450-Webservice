@@ -27,14 +27,14 @@ function sendMessageToIndividual(token, message) {
     })
 }
 
-function sendRequestToIndividual(token, senderEmail, senderid, reciever) {
+function sendRequestToIndividual(token, senderEmail, senderid, receiver) {
 
     //build the request for Pushy to send
     var data = {
         "type": "request",
         "senderEmail":senderEmail,
        "senderid": senderid,
-       "reciever": reciever
+       "receiver": receiver
     }
 
 
