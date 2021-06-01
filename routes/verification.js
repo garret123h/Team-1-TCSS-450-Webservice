@@ -168,7 +168,7 @@ router.post('/verify-user/:email', (request, response) => {
     const email = request.params.email
     if (isValidEmail(email)) {
         let query = 'UPDATE MEMBERS SET verification=1 WHERE email=$1'
-        let values = [1]
+        let values = [email]
         pool.query(query, values)
             .then(result => {
                 response.status(200).send()
