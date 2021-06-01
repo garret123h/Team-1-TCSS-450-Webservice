@@ -147,7 +147,9 @@ router.get('/forecast/:zipcode', (request, res) => {
                     })
                     let weatherDescription = forecast[5].weather[0].description // Get the weather description for 12:00pm-3:00pm interval
                     let icon = forecast[5].weather[0].icon
-                    let weatherDate = (forecast[5].dt_txt).slice(5,10) //Get the date as only mm-dd format
+                    var dayOfWeek = new Date(forecast[5].dt_txt);
+                    var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+                    let weatherDate = days[dayOfWeek.getDay()];
 
                     return {
                         'Date': weatherDate,
