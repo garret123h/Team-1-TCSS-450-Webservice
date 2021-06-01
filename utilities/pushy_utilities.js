@@ -26,7 +26,6 @@ function sendMessageToIndividual(token, message) {
     })
 }
 
-
 //use to send request to a specific client by the token
 function sendRequestToIndividual(token, senderEmail, senderid, receiver) {
     //build the request data for Pushy to send
