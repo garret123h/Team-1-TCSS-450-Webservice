@@ -1,9 +1,10 @@
 //express is the framework we're going to use to handle requests
 const express = require('express')
-// //Access the connection to Heroku Database
+//Access the connection to Heroku Database
 const pool = require('../utilities').pool
-
+//Access the request function for push notification
 const request_functions = require('../utilities/exports').requesting
+//express router
 var router = express.Router()
 
 /**
@@ -98,8 +99,7 @@ var router = express.Router()
     let values = [request.decoded.memberid, request.body.memberid]
     pool.query(query, values).then(
         pool.query(query2, values).then(result=>{
-            response.success = true,
-            response.message = "New Contact Request",  
+            response.success = true
             next()
         })
     ).catch (error => {
@@ -111,19 +111,14 @@ var router = express.Router()
 }, (request, response) => {
         let query = `SELECT token FROM Push_Token WHERE Push_Token.memberid=$1`        
         let values = [request.body.memberid]
-        pool.query(query, values)
-            .then(result => {
-                console.log(request.decoded.memberid)
-                console.log(request.body.memberid)
-                console.log(request.decoded.email)
+        pool.query(query, values).then(result => {
                 result.rows.forEach(entry => 
                     request_functions.sendRequestToIndividual(
                         entry.token,
                         request.decoded.email,
                         request.decoded.memberid,
                         request.body.memberid
-                        )
-                        )
+                        ))
                 response.send({
                     success:true
                 })
@@ -142,8 +137,8 @@ var router = express.Router()
  * 
  * @apiDescription Request to get friends contact list from database 
  * 
+ * @apiSuccess {boolean} success "true"
  * @apiSuccess {Object[]} friend contacts List which includes email, firstname, lastname, username, memberid, and verified
- * 
  * 
  * @apiError (400: SQL ERROR) {String} message "Missing required information"
  * @apiError (400: SQL ERROR) {String} message "Malformed parameter"
@@ -163,11 +158,8 @@ router.get("/", (request, response, next) => {
         })
     } else {
         next()
-    }
-}, (request, response) => {
-//    let query = 'SELECT Members.FirstName, Members.LastName, Members.email, Members.Username, MemberID_A, Verified FROM Contacts INNER JOIN Members ON Contacts.MemberID_A = Members.MemberID where Contacts.MemberID_B = $1'//and Contacts.Verified=1
-//let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Verified IN (SELECT Verified from Contacts where MemberID_B = $1)'
-let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Contacts.MemberID_B IN (SELECT MemberID_A from Contacts where MemberID_B = $1 and Verified=1)'
+    }}, (request, response) => {
+    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Contacts.MemberID_B IN (SELECT MemberID_A from Contacts where MemberID_B = $1 and Verified=1)'
     let values = [request.decoded.memberid]
     pool.query(query, values)
         .then(result => {
@@ -210,8 +202,8 @@ let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.
  * 
  * @apiDescription search the new contacts who doesn't in friend list
  * 
+ * @apiSuccess {boolean} success "true"
  * @apiSuccess {Object[]} contacts List who doesn't in friend list and it includes email, firstname, lastname, username, and memberid info
- * 
  * 
  * @apiError (400: SQL ERROR) {String} message "Missing required information"
  * @apiError (400: SQL ERROR) {String} message "Malformed parameter"
@@ -372,10 +364,22 @@ let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.
     })
 })
 
+
 /**
- * @api {Get} /request friend request list
- * @apiName getFriendRequest
+ * @api {Get} /request Get request contact list  
+ * @apiName GetRequestContacts
  * @apiGroup Contacts
+ * 
+ * @apiDescription search the new request contact list
+ * 
+ * @apiSuccess {boolean} success "true"
+ * @apiSuccess {Object[]} RequestList which contain the sender's email, first name, last name, username, memberid and verified status
+ * 
+ * @apiError (400: SQL ERROR) {String} message "Missing required information"
+ * @apiError (400: SQL ERROR) {String} message "Malformed parameter"
+ * @apiError (404: Request Not Found) {String} message "No request"
+ * 
+ * @apiUse JSONError
  */
 router.get("/request", (request, response, next) => {
     if (!request.decoded.memberid) {
@@ -388,14 +392,11 @@ router.get("/request", (request, response, next) => {
         })
     } else {
         next()
-    }
-}, (request, response) => {
-    //Get contact info
-    let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Contacts.Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Contacts.Verified=0'
-    let values = [request.decoded.memberid]
-    console.log(request.decoded.memberid);
-    pool.query(query, values)
-        .then(result => {
+    }}, (request, response) => {
+        let query = 'SELECT Members.email, Members.FirstName, Members.LastName, Members.Username, Members.MemberID, Contacts.Verified FROM Contacts JOIN Members ON Contacts.MemberID_B = Members.MemberID where Contacts.MemberID_A = $1 and Contacts.Verified=0'
+        let values = [request.decoded.memberid]
+        console.log(request.decoded.memberid);
+        pool.query(query, values).then(result => {
             if (result.rowCount == 0) {
                 response.status(404).send({
                     message: "No request"
@@ -426,11 +427,22 @@ router.get("/request", (request, response, next) => {
         })
 });
 
-
 /**
- * @api {post} /accept Accept friend request
- * @apiName acceptFriendRequest
+ * @api {post} /accept Post to accept friend request 
+ * @apiName PostAcceptRequest
  * @apiGroup Contacts
+ * 
+ * @apiDescription Post to accept friend request and it updats contact tuples for both sender and reciever's sides
+ * 
+ * @apiSuccess {boolean} success "true"
+ * @apiSuccess {String} message "Request was accepted"
+ * 
+ * @apiError (400: SQL ERROR) {String} message "Missing required information"
+ * @apiError (400: SQL ERROR) {String} message "Malformed parameter"
+ * @apiError (400: SQL ERROR) {String} message "SQL Error with detail error info"
+ * 
+ * 
+ * @apiUse JSONError
  */
  router.post("/accept", (request, response, next) => {
     if (!request.body.memberId) {
@@ -443,18 +455,16 @@ router.get("/request", (request, response, next) => {
         })
     } else {
         next()
-    }
-}, (request, response) => {
+    }}, (request, response) => {
     let query = 'UPDATE Contacts SET Verified = 1 WHERE MemberID_A = $1 AND MemberID_B = $2'
     let query2 = 'UPDATE Contacts SET Verified = 1 WHERE MemberID_B = $1 AND MemberID_A = $2'
-    let values = [request.decoded.memberid, request.body.memberId]
-
-    pool.query(query, values).then(result => {
+        let values = [request.decoded.memberid, request.body.memberId]
+        pool.query(query, values).then(result => {
         pool.query(query2, values)
-        response.send({
-            success: true,
-            message: "Request was accepted"
-        })
+            response.send({
+                success: true,
+                message: "Request was accepted"
+            })
     }).catch(error => {
         response.status(400).send({
             message: "SQL Error",
@@ -462,11 +472,5 @@ router.get("/request", (request, response, next) => {
         })
     })
 })
-
-
-
-
-
-
 
 module.exports = router

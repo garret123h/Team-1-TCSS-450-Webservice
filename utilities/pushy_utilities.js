@@ -13,7 +13,6 @@ function sendMessageToIndividual(token, message) {
         "chatid": message.chatid
     }
 
-
     // Send push notification via the Send Notifications API 
     // https://pushy.me/docs/api/send-notifications 
     pushyAPI.sendPushNotification(data, token, {}, function (err, id) {
@@ -27,16 +26,15 @@ function sendMessageToIndividual(token, message) {
     })
 }
 
+//use to send request to a specific client by the token
 function sendRequestToIndividual(token, senderEmail, senderid, receiver) {
-
-    //build the request for Pushy to send
+    //build the request data for Pushy to send
     var data = {
         "type": "request",
         "senderEmail":senderEmail,
-       "senderid": senderid,
-       "receiver": receiver
+        "senderid": senderid,
+        "receiver": receiver
     }
-
 
     // Send push notification via the Send Notifications API 
     // https://pushy.me/docs/api/send-notifications 
@@ -45,14 +43,11 @@ function sendRequestToIndividual(token, senderEmail, senderid, receiver) {
         if (err) {
             return console.log('Fatal Error', err);
         }
-
         // Log success 
         console.log('Push sent successfully! (ID: ' + id + ')')
     })
 }
-//add other "sendTypeToIndividual" functions here. Don't forget to export them
 
 module.exports = {
-    sendMessageToIndividual,
-    sendRequestToIndividual
+    sendMessageToIndividual, sendRequestToIndividual
 }
