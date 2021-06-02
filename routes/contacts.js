@@ -264,10 +264,10 @@ router.get("/", (request, response, next) => {
  * @apiName DeleteContacts
  * @apiGroup Contacts
  * 
- * @apiDescription Delete the existing contacts from contact list.
+ * @apiDescription Delete the existing contacts from contact list and DM from chat list.
  * 
  * @apiSuccess {boolean} success "true"
- * @apiSuccess {String} message "Contact was deleted"
+ * @apiSuccess {String} message "Contact and DM were deleted"
  * 
  * @apiError (400: SQL ERROR) {String} message "Missing required information"
  * @apiError (400: SQL ERROR) {String} message "Malformed parameter"
@@ -348,13 +348,15 @@ router.get("/", (request, response, next) => {
 }, (request, response) => { 
     let query = 'DELETE FROM Contacts WHERE MemberID_A = $2 AND MemberID_B = $1'
     let query2 = 'DELETE FROM Contacts WHERE MemberID_B =  $2 AND MemberID_A = $1'
+    let query3 = 'DELETE FROM chatmembers WHERE chatid in (SELECT chatid FROM chatmembers WHERE memberid=$2 and chatid in (Select chatid FROM chatmembers WHERE memberid=$1) and chatid IN (SELECT chatid FROM chatmembers GROUP BY chatid HAVING count(chatid)=2))'
     let values = [request.decoded.memberid, request.params.memberid]
     
     pool.query(query, values).then(
         pool.query(query2, values),
+        pool.query(query3, values),
         response.send({
             success: true,
-            message: "Contact was deleted"
+            message: "Contact and DM were deleted"
         })
     ).catch (error => {
         response.status(400).send({
