@@ -439,7 +439,6 @@ router.get("/request", (request, response, next) => {
  * @apiDescription Post to accept friend request and it updats contact tuples for both sender and reciever's sides
  * 
  * @apiSuccess {boolean} success "true"
- * @apiSuccess {String} message "Request was accepted"
  * 
  * @apiError (400: SQL ERROR) {String} message "Missing required information"
  * @apiError (400: SQL ERROR) {String} message "Malformed parameter"
