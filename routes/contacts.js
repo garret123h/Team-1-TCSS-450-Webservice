@@ -4,6 +4,8 @@ const express = require('express')
 const pool = require('../utilities').pool
 //Access the request function for push notification
 const request_functions = require('../utilities/exports').requesting
+//Access the request function for push notification
+const accept_functions = require('../utilities/exports').accepting
 //express router
 var router = express.Router()
 
@@ -457,22 +459,44 @@ router.get("/request", (request, response, next) => {
         })
     } else {
         next()
-    }}, (request, response) => {
+    }
+}, (request, response,next) => {
     let query = 'UPDATE Contacts SET Verified = 1 WHERE MemberID_A = $1 AND MemberID_B = $2'
     let query2 = 'UPDATE Contacts SET Verified = 1 WHERE MemberID_B = $1 AND MemberID_A = $2'
         let values = [request.decoded.memberid, request.body.memberId]
-        pool.query(query, values).then(result => {
-        pool.query(query2, values)
-            response.send({
-                success: true,
-                message: "Request was accepted"
-            })
-    }).catch(error => {
+        pool.query(query, values).then(
+        pool.query(query2, values).then(result=> {
+                response.success = true
+                next()
+    })
+    ).catch(error => {
         response.status(400).send({
             message: "SQL Error",
             error: error
         })
     })
+}, (request, response) => {
+    let query = `SELECT token FROM Push_Token WHERE Push_Token.memberid=$1`        
+    let values = [request.body.memberId]
+    console.log(request.body.memberId)
+    pool.query(query, values).then(result => {
+            result.rows.forEach(entry => 
+                accept_functions.sendAcceptingToIndividual(
+                    entry.token,
+                    request.decoded.email,
+                    request.decoded.memberid,
+                    request.body.memberId
+                    ))
+            response.send({
+                success:true
+            })
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error on select from push token",
+                error: err
+            })
+        })
 })
+
 
 module.exports = router
