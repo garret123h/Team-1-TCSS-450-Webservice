@@ -97,7 +97,7 @@ router.put('/change-password', (request, response) => {
  * 
  * @apiHeader {String} email "email" 
  * 
- * @apiSuccess {json} 
+ * @apiSuccess {json} json Success-Example:
  * 
  *  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 OK
@@ -155,7 +155,7 @@ router.get('/check-verify/:email', (request, response, next) => {
  * 
  * @apiHeader {String} email "email" 
  * 
- * @apiSuccess (200: Success)
+ * @apiSuccess (200: Success) {json} Success-Response
  * 
  * @apiError (400: Missing Authorization Header) {String} message "Missing user"
  * 

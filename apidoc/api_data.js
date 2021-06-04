@@ -1,5 +1,79 @@
 define({ "api": [
   {
+    "type": "get",
+    "url": "/check-verify/:email",
+    "title": "Check if a user has been verified",
+    "name": "CheckVerify",
+    "group": "Auth",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>&quot;email&quot;</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "json",
+            "optional": false,
+            "field": "json",
+            "description": "<p>Success-Example:</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 201 OK\n{\n  \"verify\": true\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "400: Missing Authorization Header": [
+          {
+            "group": "400: Missing Authorization Header",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing user&quot;</p>"
+          }
+        ],
+        "400: Malformed Authorization Header": [
+          {
+            "group": "400: Malformed Authorization Header",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Malformed Authorization Header&quot;</p>"
+          }
+        ],
+        "404: User Not Found": [
+          {
+            "group": "404: User Not Found",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;User not found&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/verification.js",
+    "groupTitle": "Auth"
+  },
+  {
     "type": "delete",
     "url": "/auth",
     "title": "Request to delete a Pushy Token for the user",
@@ -384,6 +458,73 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/pushyregister.js",
+    "groupTitle": "Auth"
+  },
+  {
+    "type": "get",
+    "url": "/verify-user/:email",
+    "title": "Verify user",
+    "name": "VerifyUser",
+    "group": "Auth",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>&quot;email&quot;</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "200: Success": [
+          {
+            "group": "200: Success",
+            "type": "json",
+            "optional": false,
+            "field": "Success-Response",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "400: Missing Authorization Header": [
+          {
+            "group": "400: Missing Authorization Header",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing user&quot;</p>"
+          }
+        ],
+        "400: Malformed Authorization Header": [
+          {
+            "group": "400: Malformed Authorization Header",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Malformed Authorization Header&quot;</p>"
+          }
+        ],
+        "404: User Not Found": [
+          {
+            "group": "404: User Not Found",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;User not found&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/verification.js",
     "groupTitle": "Auth"
   },
   {
@@ -1043,7 +1184,7 @@ define({ "api": [
     "title": "Delete the existing contact list",
     "name": "DeleteContacts",
     "group": "Contacts",
-    "description": "<p>Delete the existing contacts from contact list.</p>",
+    "description": "<p>Delete the existing contacts from contact list and DM from chat list.</p>",
     "success": {
       "fields": {
         "Success 200": [
@@ -1059,7 +1200,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "message",
-            "description": "<p>&quot;Contact was deleted&quot;</p>"
+            "description": "<p>&quot;Contact and DM were deleted&quot;</p>"
           }
         ]
       }
@@ -1120,6 +1261,13 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
+            "type": "boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>&quot;true&quot;</p>"
+          },
+          {
+            "group": "Success 200",
             "type": "Object[]",
             "optional": false,
             "field": "friend",
@@ -1173,6 +1321,68 @@ define({ "api": [
     "groupTitle": "Contacts"
   },
   {
+    "type": "Get",
+    "url": "/request",
+    "title": "Get request contact list",
+    "name": "GetRequestContacts",
+    "group": "Contacts",
+    "description": "<p>search the new request contact list</p>",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>&quot;true&quot;</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "RequestList",
+            "description": "<p>which contain the sender's email, first name, last name, username, memberid and verified status</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "400: SQL ERROR": [
+          {
+            "group": "400: SQL ERROR",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing required information&quot;</p>"
+          }
+        ],
+        "404: Request Not Found": [
+          {
+            "group": "404: Request Not Found",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;No request&quot;</p>"
+          }
+        ],
+        "400: JSON Error": [
+          {
+            "group": "400: JSON Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;malformed JSON in parameters&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/contacts.js",
+    "groupTitle": "Contacts"
+  },
+  {
     "type": "get",
     "url": "/contacts/search",
     "title": "Get search contact list who doesn't in user's contact(friend) list",
@@ -1182,6 +1392,13 @@ define({ "api": [
     "success": {
       "fields": {
         "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>&quot;true&quot;</p>"
+          },
           {
             "group": "Success 200",
             "type": "Object[]",
@@ -1210,6 +1427,59 @@ define({ "api": [
             "optional": false,
             "field": "message",
             "description": "<p>&quot;No search contacts were found&quot;</p>"
+          }
+        ],
+        "400: JSON Error": [
+          {
+            "group": "400: JSON Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;malformed JSON in parameters&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/contacts.js",
+    "groupTitle": "Contacts"
+  },
+  {
+    "type": "post",
+    "url": "/accept",
+    "title": "Post to accept friend request",
+    "name": "PostAcceptRequest",
+    "group": "Contacts",
+    "description": "<p>Post to accept friend request and it updats contact tuples for both sender and reciever's sides</p>",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>&quot;true&quot;</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Request was accepted&quot;</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "400: SQL ERROR": [
+          {
+            "group": "400: SQL ERROR",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing required information&quot;</p>"
           }
         ],
         "400: JSON Error": [
@@ -1855,7 +2125,7 @@ define({ "api": [
             "type": "json",
             "optional": false,
             "field": "Weather-result:",
-            "description": "<p>{ &quot;daily-forecasts&quot;: [ { &quot;Temperature&quot;: 57.52, &quot;Weather Description&quot;: &quot;light rain&quot;, &quot;Time&quot;: &quot;2:16 PM&quot; }, { &quot;Temperature&quot;: 57.67, &quot;Weather Description&quot;: &quot;scattered clouds&quot;, &quot;Time&quot;: &quot;3:16 PM&quot; }, { &quot;Temperature&quot;: 57.02, &quot;Weather Description&quot;: &quot;broken clouds&quot;, &quot;Time&quot;: &quot;4:16 PM&quot; } ] }</p>"
+            "description": "<p>{ &quot;daily-forecasts&quot;: [ { &quot;Temperature&quot;: 57.52, &quot;Weather Description&quot;: &quot;light rain&quot;, &quot;Time&quot;: &quot;2:00 PM&quot; }, { &quot;Temperature&quot;: 57.67, &quot;Weather Description&quot;: &quot;scattered clouds&quot;, &quot;Time&quot;: &quot;3:00 PM&quot; }, { &quot;Temperature&quot;: 57.02, &quot;Weather Description&quot;: &quot;broken clouds&quot;, &quot;Time&quot;: &quot;4:00 PM&quot; } ] }</p>"
           }
         ]
       }
