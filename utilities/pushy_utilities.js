@@ -48,6 +48,27 @@ function sendRequestToIndividual(token, senderEmail, senderid, receiver) {
     })
 }
 
+//use to send accept to a specific client by the token
+function sendAcceptingToIndividual(token, acceptorEmail, acceptorid, receiver) {
+    //build the accepting data for Pushy to send
+    var data = {
+        "type": "accept",
+        "acceptorEmail":acceptorEmail,
+        "acceptorid": acceptorid,
+        "receiver": receiver
+    }
+
+    // Send push notification via the Send Notifications API 
+    // https://pushy.me/docs/api/send-notifications 
+    pushyAPI.sendPushNotification(data, token, {}, function (err, id) {
+        // Log errors to console 
+        if (err) {
+            return console.log('Fatal Error', err);
+        }
+        // Log success 
+        console.log('Push sent successfully! (ID: ' + id + ')')
+    })
+}
 module.exports = {
-    sendMessageToIndividual, sendRequestToIndividual
+    sendMessageToIndividual, sendRequestToIndividual, sendAcceptingToIndividual
 }

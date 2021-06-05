@@ -13,7 +13,8 @@ const sendEmail = require('./email.js').sendEmail
 
 let messaging = require('./pushy_utilities.js')
 let requesting = require('./pushy_utilities.js')
+let accepting = require('./pushy_utilities.js')
 
 module.exports = { 
-    pool, generateHash, generateSalt, validation, sendEmail, messaging, location, requesting
+    pool, generateHash, generateSalt, validation, sendEmail, messaging, location, requesting, accepting
 }
